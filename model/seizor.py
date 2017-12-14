@@ -87,6 +87,7 @@ class LecturesSeizor:
         self.num_of_seizable = 0
         self.num_of_not_begin = 0
         self.time_diff = datetime.timedelta(0)
+        self.last_wait_time = datetime.timedelta(hours=2)
 
     def _get_opener(self, head=None):
         self.cookie = http.cookiejar.MozillaCookieJar(self.cookie_file)
@@ -237,6 +238,8 @@ class LecturesSeizor:
     def _time_match(self, server_time):
         self.time_diff = (datetime.datetime.strptime(server_time, _SERVER_TIME_FORMAT) \
                                                      - datetime.datetime.utcnow())
+        print(Fore.WHITE + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
+              "Time Synchronization, server " + str(self.time_diff) + " faster.") 
 
     def _wait(self):
         min_delta = datetime.timedelta(hours=2)
@@ -244,13 +247,15 @@ class LecturesSeizor:
             for lec in self.lectures:
                 if lec.status == lecture.STATUS['waiting']:
                     min_delta = min(min_delta, lec.seize_begin_time - datetime.datetime.now())
-        min_delta += self.time_diff
+        min_delta += self.time_diff - datetime.timedelta(seconds=5)
         if min_delta < datetime.timedelta(seconds=10):
-            min_delta = datetime.timedelta(seconds=1)
+            if min_delta < datetime.timedelta(seconds=5):
+                min_delta = min(min_delta, datetime.timedelta(seconds=2))
+            else:
+                min_delta = datetime.timedelta(seconds=5)
         print(Fore.CYAN + 'wait for ' + str(min_delta) + '.')
         time.sleep(min_delta.total_seconds())
-        if min_delta > datetime.timedelta(minutes=5):
-            self._login()
+        self.last_wait_time = min_delta
 
     def start(self):
         """Start auto seize.
@@ -258,15 +263,16 @@ class LecturesSeizor:
         If there are some lecture seizable, then seize them immediately, else wait for
         at most two hours and refresh.
         """
-        self._login()
         try:
             while True:
+                if self.last_wait_time > datetime.timedelta(minutes=5):
+                    self._login()
                 self._list_lecturs()
                 print(Fore.WHITE + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) + "Lectures:")
                 print('\n'.join(str(lec) for lec in self.lectures))
                 if self.num_of_seizable > 0:
                     self._seize_one()
-                    time.sleep(1.0)
+                    time.sleep(datetime.timedelta(seconds=2).total_seconds())
                 else:
                     print(Fore.CYAN + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
                           'No lecture seizable, ', end='')
