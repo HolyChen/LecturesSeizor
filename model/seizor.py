@@ -222,13 +222,13 @@ class LecturesSeizor:
                         pass
                     self._list_lecturs()
                     if self.num_of_gotten > old_num_of_gotten:
-                        print(Fore.GREEN + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) + 
+                        print(Fore.GREEN + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
                               "Seize lecture SUCCESS!\nId: {}\nName: {}".format(
-                              lec.chair_id, lec.title))
+                                  lec.chair_id, lec.title))
                     else:
                         print(Fore.YELLOW + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
                               "Seize lecture FAILED!\nId: {}\nName: {}".format(
-                              lec.chair_id, lec.title))
+                                  lec.chair_id, lec.title))
                     break
         else:
             print(Fore.WHITE + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
