@@ -239,7 +239,7 @@ class LecturesSeizor:
         self.time_diff = (datetime.datetime.strptime(server_time, _SERVER_TIME_FORMAT) \
                                                      - datetime.datetime.utcnow())
         print(Fore.WHITE + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
-              "Time Synchronization, server " + str(self.time_diff) + " faster.") 
+              "Time Synchronization, server " + str(self.time_diff) + " faster.")
 
     def _wait(self):
         min_delta = datetime.timedelta(hours=2)
