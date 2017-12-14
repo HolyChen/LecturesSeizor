@@ -16,7 +16,6 @@ import time
 import sys
 
 from bs4 import BeautifulSoup
-import colorama
 from colorama import Fore
 
 import model.lecture as lecture
@@ -250,7 +249,7 @@ class LecturesSeizor:
             min_delta = datetime.timedelta(seconds=1)
         print(Fore.CYAN + 'wait for ' + str(min_delta) + '.')
         time.sleep(min_delta.total_seconds())
-        if (min_delta > datetime.timedelta(minutes=5)):
+        if min_delta > datetime.timedelta(minutes=5):
             self._login()
 
     def start(self):
@@ -269,7 +268,8 @@ class LecturesSeizor:
                     self._seize_one()
                     time.sleep(1.0)
                 else:
-                    print(Fore.CYAN + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +'No lecture seizable, ', end='')
+                    print(Fore.CYAN + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
+                          'No lecture seizable, ', end='')
                     self._wait()
         except:
             self._login() # expired, re-login
