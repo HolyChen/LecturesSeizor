@@ -3,9 +3,6 @@
 
 This python script can automatically seize lectures held by School of Information and Technology, Xiamen University. The core strategy is send http requests recurrently.
 
-|[<img src="./document/imgs/example_1.png" alt="example 1" width="400">]() | [<img src="./document/imgs/example_2.png" alt="example 2" width="400">]() |
-|--------------|--------------|
-
 ## Outline
 - [Pre-requirements](#Pre-requirements)
 - [How-to](#How-to)
