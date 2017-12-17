@@ -14,7 +14,7 @@ This python script can automatically seize lectures held by School of Informatio
 [<img src="https://img.shields.io/badge/BeautifulSoup-4.6.0-green.svg" alt="BeautifulSoup 4.6.0">](https://pypi.python.org/pypi/beautifulsoup4/4.6.0) 
 [<img src="https://img.shields.io/badge/Colorama-0.3.9-yellow.svg" alt="Colorama 0.3.9">](https://pypi.python.org/pypi/colorama)
 
-It has been developed and tested in python 3.6.3 (Anoconda 3), your can only download the original python 3.x interpreter. You can install BeautifulSoup 4 etc. using **pip**.
+It has been developed and tested in python 3.6.3 (Anoconda 3), you can only download the original python 3.x interpreter. Module BeautifulSoup 4 etc. can be installed using **pip**.
 
 
 # How-to
