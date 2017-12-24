@@ -1,5 +1,5 @@
 # LecturesSeizor
-[<img src="https://img.shields.io/badge/Version-1.1-brightgreen.svg" alt="Python 3">]() [<img src="https://img.shields.io/badge/Last%20Update-2017.12.18-brightgreen.svg" alt="Python 3">]()
+[<img src="https://img.shields.io/badge/Version-1.2-brightgreen.svg" alt="Python 3">]() [<img src="https://img.shields.io/badge/Last%20Update-2017.12.25-brightgreen.svg" alt="Python 3">]()
 
 This python script can automatically seize lectures held by School of Information and Engineering, Xiamen University. The core strategy is send http requests recurrently.
 

@@ -4,7 +4,7 @@
 """Main module of Lectures Serzor.
     Author: Holy Chen
     Create Time: 2017-12-13
-    Last Update Time: 2017-12-14
+    Last Update Time: 2017-12-28
     License: GPL v3
 """
 
@@ -154,42 +154,44 @@ class LecturesSeizor:
 
         soup = BeautifulSoup(doc, "lxml", from_encoding=self.encoding)
         lectures = []
-        all_td = soup.find_all('td')[4:]
-        base = 0
-        while base < len(all_td):
-            a_lecture_td = all_td[base : base + 20]
-            lecture_para = [(a_lecture_td[1].contents[0]['id'].strip(),
-                             a_lecture_td[1].contents[0]['value'].strip()),
-                            a_lecture_td[3].string.strip(),
-                            a_lecture_td[5].string.strip(),
-                            a_lecture_td[7].string.strip(),
-                            a_lecture_td[9].string.strip(),
-                            a_lecture_td[11].string.strip(),
-                            a_lecture_td[13].string.strip(),
-                            a_lecture_td[15].string.strip(),
-                            a_lecture_td[17].string.strip()]
-            status_string = a_lecture_td[18].string \
-                if a_lecture_td[18].string is not None \
-                else a_lecture_td[18].contents[0]['value']
-            if status_string.find('时间还没到') != -1:
-                lecture_para.append(lecture.STATUS['waiting'])
-                self.num_of_not_begin += 1
-            elif status_string.find('总人数已满') != -1:
-                lecture_para.append(lecture.STATUS['fullfilled'])
-            elif status_string.find('预约该讲座') != -1:
-                lecture_para.append(lecture.STATUS['seizable'])
-                # submit input, have ctl
-                lecture_para.append(a_lecture_td[18].contents[0]['name'].strip())
-                self.num_of_seizable += 1
-            elif status_string.find('取消预约') != -1:
-                lecture_para.append(lecture.STATUS['gotten'])
-                lecture_para.append(a_lecture_td[18].contents[0]['name'].strip())
-                self.num_of_gotten += 1
-                base += 1
-            elif status_string.find('时间已截止') != -1:
-                lecture_para.append(lecture.STATUS['fullfilled'])
-            base += 20
-            lectures.append(lecture.Lecture(*lecture_para))
+        all_td = soup.find_all('td')
+        if len(all_td) >= 10: # there're some lectures now
+            all_td = all_td[4:]
+            base = 0
+            while base < len(all_td):
+                a_lecture_td = all_td[base : base + 20]
+                lecture_para = [(a_lecture_td[1].contents[0]['id'].strip(),
+                                 a_lecture_td[1].contents[0]['value'].strip()),
+                                a_lecture_td[3].string.strip(),
+                                a_lecture_td[5].string.strip(),
+                                a_lecture_td[7].string.strip(),
+                                a_lecture_td[9].string.strip(),
+                                a_lecture_td[11].string.strip(),
+                                a_lecture_td[13].string.strip(),
+                                a_lecture_td[15].string.strip(),
+                                a_lecture_td[17].string.strip()]
+                status_string = a_lecture_td[18].string \
+                    if a_lecture_td[18].string is not None \
+                    else a_lecture_td[18].contents[0]['value']
+                if status_string.find('时间还没到') != -1:
+                    lecture_para.append(lecture.STATUS['waiting'])
+                    self.num_of_not_begin += 1
+                elif status_string.find('总人数已满') != -1:
+                    lecture_para.append(lecture.STATUS['fullfilled'])
+                elif status_string.find('预约该讲座') != -1:
+                    lecture_para.append(lecture.STATUS['seizable'])
+                    # submit input, have ctl
+                    lecture_para.append(a_lecture_td[18].contents[0]['name'].strip())
+                    self.num_of_seizable += 1
+                elif status_string.find('取消预约') != -1:
+                    lecture_para.append(lecture.STATUS['gotten'])
+                    lecture_para.append(a_lecture_td[18].contents[0]['name'].strip())
+                    self.num_of_gotten += 1
+                    base += 1
+                elif status_string.find('时间已截止') != -1:
+                    lecture_para.append(lecture.STATUS['fullfilled'])
+                base += 20
+                lectures.append(lecture.Lecture(*lecture_para))
 
         self.lectures = lectures
 
@@ -277,5 +279,6 @@ class LecturesSeizor:
                     print(Fore.CYAN + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
                           'No lecture seizable, ', end='')
                     self._wait()
-        except:
+        except Exception as exception:
+            print(exception)
             self._login() # expired, re-login
