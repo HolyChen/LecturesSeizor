@@ -31,8 +31,9 @@ _REQUEST_NAME = {
 
 _DEFAULT_HEAD = {
     'Connection': 'keep-alive',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                  ' (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/70.0.3538.77 Safari/537.36',
     'Upgrade-Insecure-Requests': '1',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,'
               'image/webp,image/apng,*/*;q=0.8',
@@ -244,17 +245,18 @@ class LecturesSeizor:
               "Time Synchronization, server " + str(self.time_diff) + " faster.")
 
     def _wait(self):
-        min_delta = datetime.timedelta(hours=2)
+        min_delta = datetime.timedelta(hours=1)
         if self.num_of_not_begin > 0:
             for lec in self.lectures:
                 if lec.status == lecture.STATUS['waiting']:
                     min_delta = min(min_delta, lec.seize_begin_time - datetime.datetime.now())
+
         min_delta += self.time_diff - datetime.timedelta(seconds=5)
-        if min_delta < datetime.timedelta(seconds=10):
-            if min_delta < datetime.timedelta(seconds=5):
-                min_delta = min(min_delta, datetime.timedelta(seconds=2))
-            else:
-                min_delta = datetime.timedelta(seconds=5)
+        if min_delta < datetime.timedelta(seconds=5):
+            min_delta = min(min_delta, datetime.timedelta(seconds=2))
+        elif min_delta < datetime.timedelta(seconds=10):
+            min_delta = datetime.timedelta(seconds=5)
+
         print(Fore.CYAN + 'wait for ' + str(min_delta) + '.')
         time.sleep(min_delta.total_seconds())
         self.last_wait_time = min_delta
@@ -265,8 +267,8 @@ class LecturesSeizor:
         If there are some lecture seizable, then seize them immediately, else wait for
         at most two hours and refresh.
         """
-        try:
-            while True:
+        while True:    
+            try:
                 if self.last_wait_time > datetime.timedelta(minutes=5):
                     self._login()
                 self._list_lecturs()
@@ -279,6 +281,7 @@ class LecturesSeizor:
                     print(Fore.CYAN + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) +
                           'No lecture seizable, ', end='')
                     self._wait()
-        except Exception as exception:
-            print(exception)
-            self._login() # expired, re-login
+            except Exception as exception:
+                print(Fore.RED + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) + "Fatal error: " + 
+                              str(exception), end='')
+                self._login() # expired, re-login
