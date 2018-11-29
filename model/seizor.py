@@ -88,7 +88,7 @@ class LecturesSeizor:
         self.num_of_seizable = 0
         self.num_of_not_begin = 0
         self.time_diff = datetime.timedelta(0)
-        self.last_wait_time = datetime.timedelta(hours=2)
+        self.last_log_time = datetime.datetime(1970, 1, 1, 0, 0)
 
     def _get_opener(self, head=None):
         self.cookie = http.cookiejar.MozillaCookieJar(self.cookie_file)
@@ -137,9 +137,13 @@ class LecturesSeizor:
 
         login_url = self.url_base + _PAGE_NAME['login']
 
-        with self.opener.open(urllib.request.Request(
-            login_url, login_data.encode(self.encoding), method='POST')) as response:
-            self.cookie.save()
+        try:
+            with self.opener.open(urllib.request.Request(
+                login_url, login_data.encode(self.encoding), method='POST')) as response:
+                self.cookie.save()
+            last_log_time = datetime.datetime.now()
+        except Exception as Exception:
+            raise Exception
 
     def _list_lecturs(self):
 
@@ -259,7 +263,6 @@ class LecturesSeizor:
 
         print(Fore.CYAN + 'wait for ' + str(min_delta) + '.')
         time.sleep(min_delta.total_seconds())
-        self.last_wait_time = min_delta
 
     def start(self):
         """Start auto seize.
@@ -269,7 +272,7 @@ class LecturesSeizor:
         """
         while True:    
             try:
-                if self.last_wait_time > datetime.timedelta(minutes=5):
+                if datetime.datetime.now() - self.last_log_time > datetime.timedelta(minutes=5):
                     self._login()
                 self._list_lecturs()
                 print(Fore.WHITE + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) + "Lectures:")
@@ -283,5 +286,4 @@ class LecturesSeizor:
                     self._wait()
             except Exception as exception:
                 print(Fore.RED + datetime.datetime.now().strftime(_LOG_TIME_FORMAT) + "Fatal error: " + 
-                              str(exception), end='')
-                self._login() # expired, re-login
+                              str(exception))
